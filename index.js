@@ -173,6 +173,41 @@ app.get("/userData", async ( req, res ) => {
     }
 });
 
+app.delete("/delete/:id", async ( req, res ) => {
+    try{
+        const idToDelete = req.params.id;
+        console.log("Id", idToDelete);
+        await dbModel.deleteOne({ _id: idToDelete });
+        res.status(200).send("Successfully deleted");
+    }
+    catch(error) {
+        console.error("Error:", error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.get("/get/:id", async ( req, res ) => {
+    try {
+        const id = req.params.id;
+        const data = await Resume.findById(id);
+        res.json(data);
+    }
+    catch(error) {
+        res.status(404).json({ message: "Data not found" });
+    }
+});
+
+app.put("/update/:id", async ( req, res ) => {
+    try {
+        const { id, updatedData } = req.body;
+        const updatedResume = await Resume.findByIdAndUpdate(id, updatedData, { new: true });
+        res.json(updatedResume);
+    }
+    catch(error) {
+        res.status(400).json({ message: "Failed to update data" });
+    }
+});
+
 
 mongoose.connect(
     "mongodb+sev://" + username + ":" + password + "@cluster0.5x1hoaw.mongodb.net/resume?retryWrites=true&w=majority&appName=Cluster0"
